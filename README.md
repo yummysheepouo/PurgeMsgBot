@@ -42,11 +42,35 @@ A high-performance message management bot with audit logging capabilities, desig
 - Discord Developer Portal access
 
 ### Step-by-Step Setup
-1. **Install Dependencies**
+1. **Install Node.js**
    ```bash
    # Install Node.js (Ubuntu)
    curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
    sudo apt-get install -y nodejs
-
-   # Install MySQL (Ubuntu)
+   # Install Node.js (msi)
+   https://nodejs.org/en
+   ```
+2. **Install MySQL**
+   ```bash
    sudo apt install mysql-server
+   ```
+⚠️**It is not a must to install MySQL on your local computer, you may use an online SQL server such as amazon.com**
+
+3. **Install Discord.js and required modules**
+   ```bash
+   npm install discord.js@14 mysql2 dotenv
+   ```
+
+4. **Environment Setup** <br/>
+Create a `.env` file
+   ```env
+   TOKEN=your_bot_token
+   CLIENT_ID=your_bot_client_id
+   DB_HOST=your_sql_host_address
+   DB_PORT=your_sql_database_port #not a must
+   DB_USER=your_sql_database_user
+   DB_PASSWORD=your_password
+   DB_NAME=your_sql_database_name
+   ```
+
+
