@@ -28,11 +28,11 @@ const client = new Client({
 
 // ============== MySQL ==============
 const pool = mysql.createPool({
-  host: process.env.DB_HOST || '',
-  port: process.env.DB_PORT || 3333,
-  user: process.env.DB_USER || '',
-  password: process.env.DB_PASSWORD || '',
-  database: process.env.DB_NAME || '',
+  host: process.env.DB_HOST || 'mysql.db.bot-hosting.net',
+  port: process.env.DB_PORT || 3306,
+  user: process.env.DB_USER || 'u253813_N4grLRn8Xv',
+  password: process.env.DB_PASSWORD || 'G@LLxndU^3F!.UBby@zhRQLK',
+  database: process.env.DB_NAME || 's253813_log',
   waitForConnections: true,
   connectionLimit: 15,
   queueLimit: 30,
@@ -232,7 +232,7 @@ async function executePurge(targetUserId, executorId, guild) {
 
       // Purge Msg older than 14 days
       const deletable = targets.filter(m => 
-        Date.now() - m.createdTimestamp <= 1209600000 // 14days
+        Date.now() - m.createdTimestamp <= 1209600000 // 14days 
       );
       const manualDeletable = targets.filter(m => 
         Date.now() - m.createdTimestamp > 1209600000
@@ -302,10 +302,10 @@ async function executePurge(targetUserId, executorId, guild) {
 
 // ============== handler ==============
 client.on('messageCreate', async message => {
-  // 傳統指令處理
+  // Prefix command
   if (message.author.bot) return;
 
-  // Purge 指令
+  // Purge 
   if (message.content.startsWith(`${CONFIG.commandPrefix}purge`)) {
     if (!message.member.permissions.has(PermissionsBitField.Flags.Administrator)) {
       return message.reply({ content: '❌ Require Administrator permission', ephemeral: true });
