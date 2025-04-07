@@ -4,8 +4,9 @@
 ![Node.js](https://img.shields.io/badge/node.js-%3E%3D18.0.0-green)
 ![License](https://img.shields.io/badge/license-MIT-orange)
 
-A high-performance message management bot with audit logging capabilities, designed for Discord server moderation. Features bulk message deletion, permission-based access control, and real-time operation tracking.
-Invite the bot now: https://discord.com/oauth2/authorize?client_id=1077574548683227216&permissions=8&integration_type=0&scope=bot+applications.commands
+A high-performance message management bot with audit logging capabilities, designed for Discord server moderation. Features bulk message deletion, permission-based access control, and real-time operation tracking.<br/>
+
+### Invite the bot now: https://discord.com/oauth2/authorize?client_id=1077574548683227216&permissions=8&integration_type=0&scope=bot+applications.commands
 
 ## ✨ Key Features
 - **Cross-channel message purging** Delete messages in different channels!
