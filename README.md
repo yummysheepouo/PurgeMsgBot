@@ -8,10 +8,10 @@ A high-performance message management bot with audit logging capabilities, desig
 
 ## ✨ Key Features
 - **Cross-channel message purging** Delete messages in different channels!
+- **No time or amount limits** You can delete Messages which over 14 days with max 1000 messages once!
 - **Permission system** Admin/Mod will be able to purge, while normal members won't be able to!
 - **Log Channel with MySQL Database** Save all the purge records of a user or server!
 - **Dual command support**: Slash commands & legacy prefix commands
-- **Auto-reconnection** with exponential backoff strategy
 
 ---
 
