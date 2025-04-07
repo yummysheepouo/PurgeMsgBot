@@ -62,7 +62,7 @@ A high-performance message management bot with audit logging capabilities, desig
    ```
 
 4. **Environment Setup** <br/>
-Create a `.env` file
+Create a `.env` file and fullfill the missing info
    ```env
    TOKEN=your_bot_token
    CLIENT_ID=your_bot_client_id
@@ -72,5 +72,29 @@ Create a `.env` file
    DB_PASSWORD=your_password
    DB_NAME=your_sql_database_name
    ```
+5. **Database Initialization** (Local Database)
+   ```bash
+   node --eval "require('./src/db.js').init()"
+   ```
+6. **Run the bot!!!**
+   ```npm
+   node index.js
+   ```
 
+   If showing:
+   ```text
+   ✅ Log in as: Your Bot#0000
+   📦 Database connected
+   🔗 Slashcmd registered
+   ```
+   You have successfully run the bot!
 
+---
+
+## ⚠️ Important Notes
+### 1. Bot must have Server Members Intent enabled
+enable it if not yet enabled: https://discord.com/developers/applications
+### 2. Minimum Required Discord permissions
+```text
+View Channels | Manage Messages | Send Messages
+```
