@@ -8,6 +8,14 @@ A high-performance message management bot with audit logging capabilities, desig
 
 ### Invite the bot now: https://discord.com/oauth2/authorize?client_id=1077574548683227216&permissions=8&integration_type=0&scope=bot+applications.commands
 
+## 🍧Updates
+### 13/9/2025 
+- Repaired chance to unable connect to database
+- Repaired prefix command unable to fetch user when a user is left
+- Added a options for slashcommand `/purge` called `time`. Admin can choose the time range for purging messages
+
+
+
 ## ✨ Key Features
 - **Cross-channel message purging** Delete messages in different channels!
 - **No time or amount limits** You can delete Messages which over 14 days with max 1000 messages once!
