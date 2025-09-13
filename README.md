@@ -10,9 +10,9 @@ A high-performance message management bot with audit logging capabilities, desig
 
 ## 🍧Updates
 ### 13/9/2025 
-- Repaired chance to unable connect to database
-- Repaired prefix command unable to fetch user when a user is left
-- Added a options for slashcommand `/purge` called `time`. Admin can choose the time range for purging messages
+- Repaired the chance of being unable to connect to the database
+- Repaired the prefix command, which was unable to fetch the user when a user is left
+- Added an option for slashcommand `/purge` called `time`. Admin can choose the time range for purging messages
 
 
 
