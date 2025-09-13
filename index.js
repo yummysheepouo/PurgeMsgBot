@@ -240,7 +240,6 @@ async function executePurge(targetUserId, executorId, guild, timeRangeValue = 'a
     errors: []
   };
 
-  // 取得時間範圍
   let timeLimitMs = null;
   if (timeRangeValue !== 'all') {
     const found = TIME_OPTIONS.find(opt => opt.value === timeRangeValue);
@@ -264,7 +263,6 @@ async function executePurge(targetUserId, executorId, guild, timeRangeValue = 'a
       });
       let targets = messages.filter(m => m.author.id === targetUserId);
 
-      // 根據時間範圍過濾
       if (timeLimitMs) {
         targets = targets.filter(m => now - m.createdTimestamp <= timeLimitMs);
       }
