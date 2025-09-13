@@ -147,62 +147,91 @@ const db = {
 // ============== Slashcmd ==============
 const commands = [
   new SlashCommandBuilder()
-  .setName('purge')
-  .setDescription('Delete a user all messages')
-  .addUserOption(option =>
-    option.setName('user')
-      .setDescription('target user')
-      .setRequired(true))
-  .setDefaultMemberPermissions(PermissionsBitField.Flags.Administrator),
+    .setName('purge')
+    .setDescription('Delete a user all messages')
+    .addUserOption(option =>
+      option.setName('user')
+        .setDescription('target user')
+        .setRequired(true))
+    .addStringOption(option =>
+      option.setName('time')
+        .setDescription('Delete messages within time range')
+        .setRequired(true)
+        .addChoices(
+          { name: '1hr', value: '1hr' },
+          { name: '6hr', value: '6hr' },
+          { name: '12hr', value: '12hr' },
+          { name: '1d', value: '1d' },
+          { name: '3d', value: '3d' },
+          { name: '5d', value: '5d' },
+          { name: '7d', value: '7d' },
+          { name: '14d', value: '14d' },
+          { name: 'all', value: 'all' }
+        )
+    )
+    .setDefaultMemberPermissions(PermissionsBitField.Flags.Administrator),
 
-new SlashCommandBuilder()
-  .setName('logchannel')
-  .setDescription('set a log channel for message purge')
-  .addSubcommand(subcommand =>
-    subcommand.setName('set')
-      .setDescription('set a log channel')
-      .addChannelOption(option =>
-        option.setName('channel')
-          .setDescription('must be a text channel')
-          .setRequired(true)))
-  .addSubcommand(subcommand =>
-    subcommand.setName('get')
-      .setDescription('get current log channel that already set'))
-  .addSubcommand(subcommand =>
-    subcommand.setName('reset')
-      .setDescription('reset log channel'))
-  .setDefaultMemberPermissions(PermissionsBitField.Flags.Administrator),
+  new SlashCommandBuilder()
+    .setName('logchannel')
+    .setDescription('set a log channel for message purge')
+    .addSubcommand(subcommand =>
+      subcommand.setName('set')
+        .setDescription('set a log channel')
+        .addChannelOption(option =>
+          option.setName('channel')
+            .setDescription('must be a text channel')
+            .setRequired(true)))
+    .addSubcommand(subcommand =>
+      subcommand.setName('get')
+        .setDescription('get current log channel that already set'))
+    .addSubcommand(subcommand =>
+      subcommand.setName('reset')
+        .setDescription('reset log channel'))
+    .setDefaultMemberPermissions(PermissionsBitField.Flags.Administrator),
 
-new SlashCommandBuilder()
-  .setName('help')
-  .setDescription('Show command list and info'),
+  new SlashCommandBuilder()
+    .setName('help')
+    .setDescription('Show command list and info'),
 
-new SlashCommandBuilder()
-  .setName('audit')
-   .setDescription('check purge audit logs')
-   .addSubcommand(subcommand =>
-      subcommand.setName('user')
-      .setDescription('user specific logs')
-       .addUserOption(option =>
-          option.setName('target')
-          .setDescription('target user')
-          .setRequired(true))
-      .addIntegerOption(option =>
-          option.setName('limit')
-          .setDescription('show number (max 10)')))
-   .addSubcommand(subcommand =>
-      subcommand.setName('guild')
-      .setDescription('all guild logs of the server')
-      .addIntegerOption(option =>
-          option.setName('limit')
-          .setDescription('show number (max 20)')))
-   .setDefaultMemberPermissions(PermissionsBitField.Flags.Administrator)
-   .toJSON(),
+  new SlashCommandBuilder()
+    .setName('audit')
+     .setDescription('check purge audit logs')
+     .addSubcommand(subcommand =>
+        subcommand.setName('user')
+        .setDescription('user specific logs')
+         .addUserOption(option =>
+            option.setName('target')
+            .setDescription('target user')
+            .setRequired(true))
+        .addIntegerOption(option =>
+            option.setName('limit')
+            .setDescription('show number (max 10)')))
+     .addSubcommand(subcommand =>
+        subcommand.setName('guild')
+        .setDescription('all guild logs of the server')
+        .addIntegerOption(option =>
+            option.setName('limit')
+            .setDescription('show number (max 20)')))
+     .setDefaultMemberPermissions(PermissionsBitField.Flags.Administrator)
+     .toJSON(),
 
 ];
 
+// ============== Time Options ==============
+const TIME_OPTIONS = [
+  { name: '1hr', value: '1hr', ms: 1 * 60 * 60 * 1000 },
+  { name: '6hr', value: '6hr', ms: 6 * 60 * 60 * 1000 },
+  { name: '12hr', value: '12hr', ms: 12 * 60 * 60 * 1000 },
+  { name: '1d', value: '1d', ms: 24 * 60 * 60 * 1000 },
+  { name: '3d', value: '3d', ms: 3 * 24 * 60 * 60 * 1000 },
+  { name: '5d', value: '5d', ms: 5 * 24 * 60 * 60 * 1000 },
+  { name: '7d', value: '7d', ms: 7 * 24 * 60 * 60 * 1000 },
+  { name: '14d', value: '14d', ms: 14 * 24 * 60 * 60 * 1000 },
+  { name: 'all', value: 'all', ms: null }
+];
+
 // ============== Core of purge ==============
-async function executePurge(targetUserId, executorId, guild) {
+async function executePurge(targetUserId, executorId, guild, timeRangeValue = 'all') {
   const startTime = Date.now();
   const report = {
     total: 0,
@@ -210,6 +239,14 @@ async function executePurge(targetUserId, executorId, guild) {
     samples: [],
     errors: []
   };
+
+  // 取得時間範圍
+  let timeLimitMs = null;
+  if (timeRangeValue !== 'all') {
+    const found = TIME_OPTIONS.find(opt => opt.value === timeRangeValue);
+    if (found) timeLimitMs = found.ms;
+  }
+  const now = Date.now();
 
   const channels = guild.channels.cache.filter(c => 
     c.isTextBased() &&
@@ -225,14 +262,19 @@ async function executePurge(targetUserId, executorId, guild) {
         limit: CONFIG.maxFetch,
         cache: false 
       });
-      const targets = messages.filter(m => m.author.id === targetUserId);
+      let targets = messages.filter(m => m.author.id === targetUserId);
+
+      // 根據時間範圍過濾
+      if (timeLimitMs) {
+        targets = targets.filter(m => now - m.createdTimestamp <= timeLimitMs);
+      }
 
       // Purge Msg older than 14 days
       const deletable = targets.filter(m => 
-        Date.now() - m.createdTimestamp <= 1209600000 // 14days 
+        now - m.createdTimestamp <= 1209600000 // 14days 
       );
       const manualDeletable = targets.filter(m => 
-        Date.now() - m.createdTimestamp > 1209600000
+        now - m.createdTimestamp > 1209600000
       );
 
       if (deletable.size > 0) {
@@ -284,15 +326,15 @@ async function executePurge(targetUserId, executorId, guild) {
   );
 
   const embed = new EmbedBuilder()
-  .setColor(0x0099FF)
-  .setTitle('Report')
-  .addFields(
-    { name: 'Target user', value: `<@${targetUserId}>`, inline: true },
-    { name: 'Deleted', value: `${report.total} messages`, inline: true },
-    { name: 'Affected Channel', value: report.channels.map(c => `#${c.name} (${c.count})`).join('\n') || 'Null', inline: false }
-  )
-  .setFooter({ text: `excute time: ${duration.toFixed(2)}s` })
-  
+    .setColor(0x0099FF)
+    .setTitle('Report')
+    .addFields(
+      { name: 'Target user', value: `<@${targetUserId}>`, inline: true },
+      { name: 'Deleted', value: `${report.total} messages`, inline: true },
+      { name: 'Time Range', value: timeRangeValue, inline: true },
+      { name: 'Affected Channel', value: report.channels.map(c => `#${c.name} (${c.count})`).join('\n') || 'Null', inline: false }
+    )
+    .setFooter({ text: `excute time: ${duration.toFixed(2)}s` });
 
   return embed;
 }
@@ -348,10 +390,11 @@ client.on('interactionCreate', async interaction => {
     }
 
     const targetUser = interaction.options.getUser('user');
+    const timeRange = interaction.options.getString('time') || 'all';
     await interaction.deferReply();
 
     try {
-      const report = await executePurge(targetUser.id, interaction.user.id, interaction.guild);
+      const report = await executePurge(targetUser.id, interaction.user.id, interaction.guild, timeRange);
       await interaction.editReply({ embeds: [report] });
       await logAction(interaction.guild.id, report);
     } catch (err) {
@@ -363,7 +406,7 @@ client.on('interactionCreate', async interaction => {
   // Logchannel 
   if (interaction.commandName === 'logchannel') {
     if (!interaction.member.permissions.has(PermissionsBitField.Flags.Administrator)) {
-      return interaction.reply({ content: '❌ Require Admin permission', ephemeral: true });
+      return interaction.reply({ content: '❌ Require Administrator permission', ephemeral: true });
     }
 
     const subCommand = interaction.options.getSubcommand();
@@ -374,7 +417,7 @@ client.on('interactionCreate', async interaction => {
   // Audit 
   if (interaction.commandName === 'audit') {
     if (!interaction.member.permissions.has(PermissionsBitField.Flags.Administrator)) {
-      return interaction.reply({ content: '❌ Require Admin permission', ephemeral: true });
+      return interaction.reply({ content: '❌ Require Administrator permission', ephemeral: true });
     }
 
     const subCommand = interaction.options.getSubcommand();
