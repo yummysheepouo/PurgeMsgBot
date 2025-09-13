@@ -30,7 +30,7 @@ A high-performance message management bot with audit logging capabilities, desig
 ### 1. Core Commands
 | Command | Parameters | Permission Required | Example | Notes |
 |---------|------------|----------------------|---------|-------|
-| `/purge` | `@user @time` | `Manage Messages` | `/purge @spammer` | Max 1000 messages/operation |
+| `/purge` | `@user` `@time` | `Manage Messages` | `/purge @spammer 1hr` | Max 1000 messages/operation |
 | `/logchannel set` | `#channel` | `Administrator` | `/logchannel set #audit` | Requires text channel |
 | `/audit user` | `@user [limit]` | `Administrator` | `/audit user @target 15` | Default 10 records |
 | `/audit guild` | `[limit]` | `Administrator` | `/audit guild 25` | Default 20 records |
